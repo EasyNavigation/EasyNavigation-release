@@ -15,8 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 import atexit
 import math
+import os
+import sys
 
 import rclpy
 from rclpy.executors import ExternalShutdownException
@@ -35,6 +38,12 @@ from ..controller.ros_controllers import (
     TwistProcessor,
     TwistStampedProcessor,
 )
+
+
+# Prefer vendored textual package inside easynav_tools/vendor.
+_vendor_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'vendor'))
+if os.path.isdir(_vendor_dir) and _vendor_dir not in sys.path:
+    sys.path.insert(0, _vendor_dir)
 
 
 class EasyNavTabbedApp(App):
@@ -420,7 +429,8 @@ class EasyNavTabbedApp(App):
     def _poll_time_stats_log(self) -> None:
         """Read new lines from the log and update the Time stats table."""
         rows = self.log_reader.poll_time_stats_log()
-        self.set_time_stats_rows(rows)
+        if rows is not None:
+            self.set_time_stats_rows(rows)
 
     def _ros_shutdown(self) -> None:
         if rclpy.ok():
