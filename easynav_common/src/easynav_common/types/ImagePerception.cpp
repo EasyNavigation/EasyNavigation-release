@@ -50,7 +50,7 @@ ImagePerceptionHandler::create_subscription(
   options.callback_group = cb_group;
 
   return node.create_subscription<sensor_msgs::msg::Image>(
-    topic, rclcpp::SensorDataQoS(),
+    topic, rclcpp::SensorDataQoS().reliable(),
     [target](const sensor_msgs::msg::Image::SharedPtr msg)
     {
       auto typed_target = std::dynamic_pointer_cast<ImagePerception>(target);
