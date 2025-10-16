@@ -1,0 +1,12 @@
+Source: ros-kilted-easynav-tools
+Section: misc
+Priority: optional
+Maintainer: Francisco Martín Rico <fmrico@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), python3-pytest <!nocheck>, ros-kilted-ament-cmake-pytest <!nocheck>, ros-kilted-ament-copyright <!nocheck>, ros-kilted-ament-flake8 <!nocheck>, ros-kilted-ament-pep257 <!nocheck>, ros-kilted-ament-xmllint <!nocheck>, ros-kilted-geometry-msgs, ros-kilted-rclpy, ros-kilted-rosidl-runtime-py, ros-kilted-ros-workspace, python3-all, python3-setuptools, dh-python
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-kilted-easynav-tools
+Architecture: any
+Depends: ${python3:Depends}, ${misc:Depends}, python3-rich, ros-kilted-easynav-interfaces, ros-kilted-easynav-support-py, ros-kilted-geometry-msgs, ros-kilted-rclpy, ros-kilted-ros2cli, ros-kilted-rosidl-runtime-py, ros-kilted-ros-workspace
+Description: ROS 2 Navigation tools: TUI + ros2cli commands for EasyNav.
