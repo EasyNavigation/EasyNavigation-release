@@ -2,6 +2,20 @@
 Changelog for package easynav_localizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.0 (2025-12-01)
+------------------
+* Merge rolling features into kilted
+* Cleanup unused headers
+* Reshape execution and sensor handling
+* Make dummies' fake processing time independent from clock source
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno
+
+0.1.4 (2025-10-16)
+------------------
+* Merge kilted version bump into rolling
+* Merge kilted into rolling. Update version to 0.1.3
+* Contributors: Francisco Miguel Moreno
+
 0.1.3 (2025-10-12)
 ------------------
 * New Constructor for PointPerceptionsView with only one perception
