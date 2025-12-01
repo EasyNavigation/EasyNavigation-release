@@ -2,12 +2,14 @@
 Changelog for package easynav_sensors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.0 (2025-12-01)
+0.3.0 (2025-12-01)
 ------------------
+* Merge rolling features into kilted
 * Add vision_msgs/msg/Detection3DArray perception
 * Cleanup unused headers
+* Reshape execution and sensor handling
 * Finished collision checker
-* Lazy update in PointPerceptions
+* Optimize pointperceptionview
 * Refactor set_by_group to avoid runtime lookups
 * GNSS Support
 * Fix TF compilation warnings

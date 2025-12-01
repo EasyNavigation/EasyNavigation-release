@@ -2,11 +2,11 @@
 Changelog for package easynav_support_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.0 (2025-12-01)
+0.3.0 (2025-12-01)
 ------------------
-* Add feedback case in sent goal state to avoid unknown msg error
-* small fixes in py goal manager client
-* Contributors: Esther Aguado, Francisco Martín Rico, estherag
+* Merge rolling features into kilted
+* Small fixes in Python Goal Manager
+* Contributors: Esther Aguado, Francisco Martín Rico, Francisco Miguel Moreno, estherag
 
 0.1.4 (2025-10-16)
 ------------------

@@ -2,18 +2,19 @@
 Changelog for package easynav_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.0 (2025-12-01)
+0.3.0 (2025-12-01)
 ------------------
-* Remove unused include and random
+* Merge rolling features into kilted
 * Set collision checker disabled by default
 * Cleanup unused headers
-* Add feedback case in sent goal state to avoid unknown msg error
+* Reshape execution and sensor handling
 * Change spin_some to spin_all. Add param for max spin time
 * Dedicated thread for TF updates
 * Fix TF compilation warnings
 * GoalManager: Split position tolerance into x/y and height
-* Remove use_sim_time param from tf node left in `#59 <https://github.com/Butakus/EasyNavigation/issues/59>`_
-* Contributors: Esther Aguado, Francisco Martín Rico, Francisco Miguel Moreno, estherag
+* Remove use_sim_time param from tf node left in `#59 <https://github.com/EasyNavigation/EasyNavigation/issues/59>`_
+* Fix block
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno
 
 0.1.4 (2025-10-16)
 ------------------

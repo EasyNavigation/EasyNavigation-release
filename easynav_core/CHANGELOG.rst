@@ -2,12 +2,12 @@
 Changelog for package easynav_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.0 (2025-12-01)
+0.3.0 (2025-12-01)
 ------------------
 * Add README.md with base classes description
-* Remove unused include and random
 * Set collision checker disabled by default
 * Cleanup unused headers
+* Reshape execution and sensor handling
 * Add warning when exceeding the target cycle time
 * Finished collision checker
 * Reset method execution time when triggered

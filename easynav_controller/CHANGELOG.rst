@@ -2,7 +2,7 @@
 Changelog for package easynav_controller
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.0 (2025-12-01)
+0.3.0 (2025-12-01)
 ------------------
 * Cleanup unused headers
 * Reshape execution and sensor handling

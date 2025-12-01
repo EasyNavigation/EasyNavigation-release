@@ -2,20 +2,14 @@
 Changelog for package easynav_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.0 (2025-12-01)
+0.3.0 (2025-12-01)
 ------------------
-* Merge rolling into jazzy
 * Add vision_msgs/msg/Detection3DArray perception
 * Cleanup unused headers
 * Reshape execution and sensor handling
 * Finished collision checker
 * Optimize pointperceptionview
-* Option to non-lazy ops
-* Optimize filter and collapse
-* Optimized downsample and delete risky constructors
-* Lazy update in PointPerceptions
 * Allow using yaets tracing macros from outside the easynav namespace
-* Add namespace to yaets tracing macro
 * GNSS Support
 * Add missing dependencies
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno

@@ -2,10 +2,10 @@
 Changelog for package easynav_interfaces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.0 (2025-12-01)
+0.3.0 (2025-12-01)
 ------------------
-* Merge branch 'jazzy' into rolling
-* Contributors: Francisco Martín Rico
+* Merge rolling features into kilted
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno
 
 0.1.4 (2025-10-16)
 ------------------
