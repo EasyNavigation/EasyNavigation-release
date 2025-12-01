@@ -172,6 +172,10 @@ class GoalManagerClient:
             match self.state:
                 case ClientState.SENT_GOAL:
                     match msg.type:
+                        case NavigationControl.FEEDBACK:
+                            self.node.get_logger().debug(
+                                'Getting navigation feedback while waiting for acceptance')
+                            self.last_feedback = msg
                         case NavigationControl.ACCEPT:
                             self.node.get_logger().debug('Goal accepted. Navigating')
                             self.state = ClientState.ACCEPTED_AND_NAVIGATING
@@ -183,8 +187,8 @@ class GoalManagerClient:
                             self.state = ClientState.ERROR
                         case _:
                             self.node.get_logger().error(
-                                'State SENT_PREEMPT; Unexpected message: "%d": "%s"' %
-                                msg.type, msg.status_message)
+                                'State SENT_GOAL; Unexpected message: "%d": "%s"' %
+                                (msg.type, msg.status_message))
                             self.state = ClientState.ERROR
                 case ClientState.SENT_PREEMPT:
                     match msg.type:
@@ -203,7 +207,7 @@ class GoalManagerClient:
                         case _:
                             self.node.get_logger().error(
                                 'State SENT_PREEMPT; Unexpected message: "%d": "%s"' %
-                                msg.type, msg.status_message)
+                                (msg.type, msg.status_message))
                             self.state = ClientState.ERROR
                 case ClientState.ACCEPTED_AND_NAVIGATING:
                     match msg.type:
