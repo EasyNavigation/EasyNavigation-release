@@ -2,7 +2,7 @@
 Changelog for package easynav_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.3.1 (2025-12-17)
+0.2.1 (2025-12-17)
 ------------------
 * Downgrade from C++23 features
 * Remove std::expected from MethodBase::initialize interface
@@ -10,12 +10,12 @@ Changelog for package easynav_core
 * Unify TF configuration
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
 
-0.3.0 (2025-12-01)
+0.2.0 (2025-12-01)
 ------------------
 * Add README.md with base classes description
+* Remove unused include and random
 * Set collision checker disabled by default
 * Cleanup unused headers
-* Reshape execution and sensor handling
 * Add warning when exceeding the target cycle time
 * Finished collision checker
 * Reset method execution time when triggered

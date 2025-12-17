@@ -2,7 +2,7 @@
 Changelog for package easynav_controller
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.3.1 (2025-12-17)
+0.2.1 (2025-12-17)
 ------------------
 * Downgrade from C++23 features
 * Remove std::expected from MethodBase::initialize interface
@@ -10,7 +10,7 @@ Changelog for package easynav_controller
 * Unify TF configuration
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
 
-0.3.0 (2025-12-01)
+0.2.0 (2025-12-01)
 ------------------
 * Cleanup unused headers
 * Reshape execution and sensor handling
