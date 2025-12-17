@@ -2,6 +2,11 @@
 Changelog for package easynav_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.1 (2025-12-17)
+------------------
+* Goal tolerances to the nav_state
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno
+
 0.3.0 (2025-12-01)
 ------------------
 * Merge rolling features into kilted
