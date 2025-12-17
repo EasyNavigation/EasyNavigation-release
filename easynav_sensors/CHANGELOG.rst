@@ -2,6 +2,12 @@
 Changelog for package easynav_sensors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.1 (2025-12-17)
+------------------
+* TF Refactor
+* Unify TF configuration
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno
+
 0.2.0 (2025-12-01)
 ------------------
 * Add vision_msgs/msg/Detection3DArray perception
