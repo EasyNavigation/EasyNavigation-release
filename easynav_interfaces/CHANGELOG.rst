@@ -2,6 +2,9 @@
 Changelog for package easynav_interfaces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.1 (2025-12-17)
+------------------
+
 0.3.0 (2025-12-01)
 ------------------
 * Merge rolling features into kilted
