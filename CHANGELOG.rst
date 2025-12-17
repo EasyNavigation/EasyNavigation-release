@@ -2,6 +2,12 @@
 Changelog for package easynav_sensors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.1 (2025-12-17)
+------------------
+* TF Refactor
+* Unify TF configuration
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno
+
 0.3.0 (2025-12-01)
 ------------------
 * Merge rolling features into kilted
