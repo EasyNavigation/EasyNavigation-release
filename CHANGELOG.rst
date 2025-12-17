@@ -2,6 +2,9 @@
 Changelog for package easynav_support_py
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.2.1 (2025-12-17)
+------------------
+
 0.2.0 (2025-12-01)
 ------------------
 * Add feedback case in sent goal state to avoid unknown msg error
