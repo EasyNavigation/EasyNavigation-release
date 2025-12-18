@@ -2,13 +2,16 @@
 Changelog for package easynav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.1 (2025-12-17)
+0.3.2 (2025-12-18)
 ------------------
 
-0.2.0 (2025-12-01)
+0.3.1 (2025-12-17)
 ------------------
-* Merge branch 'jazzy' into rolling
-* Contributors: Francisco Martín Rico
+
+0.3.0 (2025-12-01)
+------------------
+* Merge rolling into kilted and fix build issues
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno
 
 0.1.4 (2025-10-16)
 ------------------
