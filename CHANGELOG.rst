@@ -2,6 +2,9 @@
 Changelog for package easynav_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.2 (2025-12-18)
+------------------
+
 0.3.1 (2025-12-17)
 ------------------
 * Goal tolerances to the nav_state
