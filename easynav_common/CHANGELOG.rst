@@ -2,12 +2,34 @@
 Changelog for package easynav_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.2.2 (2025-12-18)
+0.4.0 (2026-07-26)
+------------------
+* Added get_no_group in NavState
+* get_by_type and get_to_vector in NavState
+* Add default group. Add debug info
+* Fix bug in NavState when updating an existing key via pointer
+* Refactor PerceptionHandler
+  PerceptionHandler now represents a single sensor input, not a sensor group
+* Perception types and ops to easynav_sensors
+* Fix segfault in some cases and reduce extrapolation to the future
+* GPLv3 -> Apache 2.0
+  API to get perception times
+* Add the option to get the fuse() efective timestamp
+* Improve navstate print including the time
+* Add exact_time parameter to fuse to use the last TF if false
+* Adjust process time to input times
+* Fix TF stucks
+* Get last ime of the perceptions in a view
+* Set robot_frame as default for the perception pipeline
+* Add a bas_footprint frame in TFInfo
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno
+
+0.3.2 (2025-12-18)
 ------------------
 * Hotfix: Remove remaining C++20/23 features
 * Contributors: Francisco Miguel Moreno
 
-0.2.1 (2025-12-17)
+0.3.1 (2025-12-17)
 ------------------
 * Downgrade from C++23 features
 * Remove std::expected from MethodBase::initialize interface
@@ -15,9 +37,8 @@ Changelog for package easynav_common
 * Unify TF configuration
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
 
-0.2.0 (2025-12-01)
+0.3.0 (2025-12-01)
 ------------------
-* Merge rolling into jazzy
 * Add vision_msgs/msg/Detection3DArray perception
 * Cleanup unused headers
 * Reshape execution and sensor handling
@@ -29,9 +50,14 @@ Changelog for package easynav_common
 * Lazy update in PointPerceptions
 * Allow using yaets tracing macros from outside the easynav namespace
 * Add namespace to yaets tracing macro
+* Allow using yaets tracing macros from outside the easynav namespace
 * GNSS Support
 * Add missing dependencies
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
+
+0.2.0 (2025-12-01)
+------------------
+* Merge rolling into jazzy
 
 0.1.4 (2025-10-16)
 ------------------
