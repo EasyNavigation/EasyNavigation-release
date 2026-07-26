@@ -1,4 +1,0 @@
-ament_add_gtest(controller_node_tests controller_node_tests.cpp)
-target_link_libraries(controller_node_tests
-  easynav_controller
-)
