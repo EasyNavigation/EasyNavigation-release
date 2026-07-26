@@ -1,21 +1,17 @@
 // Copyright 2025 Intelligent Robotics Lab
 //
 // This file is part of the project Easy Navigation (EasyNav in short)
-// licensed under the GNU General Public License v3.0.
-// See <http://www.gnu.org/licenses/> for details.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// Easy Navigation program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 /// \file
 /// \brief Implementation of the base class MethodBase used in plugin-based EasyNav method components.
@@ -40,13 +36,13 @@ MethodBase::initialize(
   rt_frequency_ = 10.0;
   frequency_ = 10.0;
 
-  parent_node_->declare_parameter(plugin_name + ".rt_freq", rt_frequency_);
-  parent_node_->declare_parameter(plugin_name + ".freq", frequency_);
-  parent_node_->get_parameter(plugin_name + ".rt_freq", rt_frequency_);
-  parent_node_->get_parameter(plugin_name + ".freq", frequency_);
+  parent_node->declare_parameter(plugin_name + ".rt_freq", rt_frequency_);
+  parent_node->declare_parameter(plugin_name + ".freq", frequency_);
+  parent_node->get_parameter(plugin_name + ".rt_freq", rt_frequency_);
+  parent_node->get_parameter(plugin_name + ".freq", frequency_);
 
-  last_ts_ = parent_node_->now();
-  rt_last_ts_ = parent_node_->now();
+  last_ts_ = parent_node->now();
+  rt_last_ts_ = parent_node->now();
 
   on_initialize();
 }
@@ -54,7 +50,7 @@ MethodBase::initialize(
 std::shared_ptr<rclcpp_lifecycle::LifecycleNode>
 MethodBase::get_node() const
 {
-  return parent_node_;
+  return parent_node_.lock();
 }
 
 const std::string &
@@ -66,13 +62,15 @@ MethodBase::get_plugin_name() const
 bool
 MethodBase::isTime2RunRT()
 {
-  const auto now = parent_node_->now();
+  auto node = parent_node_.lock();
+  if (!node) {return false;}
+  const auto now = node->now();
   const double target_cycle_time = 1.0 / rt_frequency_;
   const double cycle_time = (now - rt_last_ts_).seconds();
   if (cycle_time >= target_cycle_time) {
     if (cycle_time > 1.5 * target_cycle_time) {
       RCLCPP_WARN_THROTTLE(
-          parent_node_->get_logger(), *parent_node_->get_clock(), 2000,
+          node->get_logger(), *node->get_clock(), 2000,
           "[%s] RT cycle time exceeded target by more than 1.5x (%.3f s > %.3f s)",
           plugin_name_.c_str(), cycle_time, target_cycle_time);
     }
@@ -86,13 +84,15 @@ MethodBase::isTime2RunRT()
 bool
 MethodBase::isTime2Run()
 {
-  const auto now = parent_node_->now();
+  auto node = parent_node_.lock();
+  if (!node) {return false;}
+  const auto now = node->now();
   const double target_cycle_time = 1.0 / frequency_;
   const double cycle_time = (now - last_ts_).seconds();
   if (cycle_time >= target_cycle_time) {
     if (cycle_time > 1.5 * target_cycle_time) {
       RCLCPP_WARN_THROTTLE(
-        parent_node_->get_logger(), *parent_node_->get_clock(), 2000,
+        node->get_logger(), *node->get_clock(), 2000,
         "[%s] target cycle time exceeded by more than 1.5x (%.3f s > %.3f s)",
         plugin_name_.c_str(), cycle_time, target_cycle_time);
     }
@@ -106,13 +106,17 @@ MethodBase::isTime2Run()
 void
 MethodBase::setRunRT()
 {
-  rt_last_ts_ = parent_node_->now();
+  if (auto node = parent_node_.lock()) {
+    rt_last_ts_ = node->now();
+  }
 }
 
 void
 MethodBase::setRun()
 {
-  last_ts_ = parent_node_->now();
+  if (auto node = parent_node_.lock()) {
+    last_ts_ = node->now();
+  }
 }
 
 }  // namespace easynav
