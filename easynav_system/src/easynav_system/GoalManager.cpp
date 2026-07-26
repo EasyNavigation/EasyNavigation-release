@@ -1,21 +1,17 @@
 // Copyright 2025 Intelligent Robotics Lab
 //
 // This file is part of the project Easy Navigation (EasyNav in short)
-// licensed under the GNU General Public License v3.0.
-// See <http://www.gnu.org/licenses/> for details.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// Easy Navigation program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 /// \file
 /// \brief Implementation of the GoalManager class.
@@ -84,11 +80,21 @@ GoalManager::GoalManager(
   parent_node_->declare_parameter("position_tolerance", goal_tolerance_.position);
   parent_node_->declare_parameter("height_tolerance", goal_tolerance_.height);
   parent_node_->declare_parameter("angle_tolerance", goal_tolerance_.yaw);
+  parent_node_->declare_parameter("update_frequency", update_frequency_);
   parent_node_->get_parameter("allow_preempt_goal", allow_preempt_goal_);
   parent_node_->get_parameter("position_tolerance", goal_tolerance_.position);
   parent_node_->get_parameter("height_tolerance", goal_tolerance_.height);
   parent_node_->get_parameter("angle_tolerance", goal_tolerance_.yaw);
+  parent_node_->get_parameter("update_frequency", update_frequency_);
+  if (update_frequency_ <= 0.0) {
+    RCLCPP_WARN(
+      parent_node_->get_logger(),
+      "Parameter 'update_frequency' must be > 0.0 (got %.3f); falling back to 20.0",
+      update_frequency_);
+    update_frequency_ = 20.0;
+  }
 
+  update_period_ = rclcpp::Duration::from_seconds(1.0 / update_frequency_);
   // Expose initial goal tolerances in NavState so controllers can reuse them
   nav_state.set("goal_tolerance.position", goal_tolerance_.position);
   nav_state.set("goal_tolerance.height", goal_tolerance_.height);
@@ -349,15 +355,28 @@ GoalManager::update(NavState & nav_state)
   feedback.current_pose.pose = odom.pose.pose;
   feedback.navigation_time = parent_node_->now() - nav_start_time_;
 
-  const auto & first_goal = goals_.goals.front().pose;
+  // Copy (not reference): check_goals() below may erase the front goal, which would
+  // otherwise leave this dangling.
+  const auto first_goal = goals_.goals.front().pose;
   feedback.distance_to_goal = calculate_distance_xy(robot_pose, first_goal);
 
   // ToDo[@fmrico]: Complete feedback info: estimated_time_remaining and distance_covered
 
-  RCLCPP_DEBUG(parent_node_->get_logger(), "Sending navigation feedback");
+  // Throttle only the periodic FEEDBACK / GoalManagerInfo publishing so these topics
+  // aren't saturated. The nav_state bookkeeping below (goals, navigation_state) must run
+  // every cycle regardless, since the planner reacts to it as soon as a new goal's
+  // timestamp is newer than its last planned one (see SystemNode::system_cycle()); delaying
+  // that sync here would make the planner compute a path from stale/empty goals.
+  const auto now = parent_node_->now();
+  const bool should_publish = first_update_ || (now - last_update_time_) >= update_period_;
 
-  control_pub_->publish(feedback);
-  *last_control_ = feedback;
+  if (should_publish) {
+    RCLCPP_DEBUG(parent_node_->get_logger(), "Sending navigation feedback");
+    control_pub_->publish(feedback);
+    *last_control_ = feedback;
+    first_update_ = false;
+    last_update_time_ = now;
+  }
 
   check_goals(robot_pose, goal_tolerance_);
 
@@ -379,7 +398,7 @@ GoalManager::update(NavState & nav_state)
     nav_state.set("navigation_state", state_);
   }
 
-  if (info_pub_->get_subscription_count() > 0) {
+  if (should_publish && info_pub_->get_subscription_count() > 0) {
     easynav_interfaces::msg::GoalManagerInfo msg;
     msg.status = static_cast<int>(get_state());
     msg.goals = get_goals();
