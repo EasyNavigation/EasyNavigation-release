@@ -1,21 +1,17 @@
 // Copyright 2025 Intelligent Robotics Lab
 //
 // This file is part of the project Easy Navigation (EasyNav in short)
-// licensed under the GNU General Public License v3.0.
-// See <http://www.gnu.org/licenses/> for details.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// Easy Navigation program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 /// \file
 /// \brief Implementation of the ControllerNode class.
@@ -46,7 +42,9 @@ ControllerNode::ControllerNode(
     [](const geometry_msgs::msg::TwistStamped & twist) {
       std::ostringstream ret;
 
-      ret << "Twist with (" << twist.twist.linear.x << ", " << twist.twist.linear.y << ", " <<
+      ret << "{ " << rclcpp::Time(twist.header.stamp).seconds() << "} Twist with (" <<
+        twist.twist.linear.x << ", " <<
+        twist.twist.linear.y << ", " <<
         twist.twist.linear.z << ") (" << twist.twist.angular.x << ", " <<
         twist.twist.angular.y << ", " << twist.twist.angular.z << ")";
 
@@ -57,22 +55,29 @@ ControllerNode::ControllerNode(
 
 ControllerNode::~ControllerNode()
 {
-  if (get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE) {
+  if (get_current_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE) {
     trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVE_SHUTDOWN);
   }
-  if (get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE) {
+  if (get_current_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE) {
     trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_INACTIVE_SHUTDOWN);
   }
-  if (get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_UNCONFIGURED) {
+  if (get_current_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_UNCONFIGURED) {
     trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_UNCONFIGURED_SHUTDOWN);
   }
 
+  controller_method_ = nullptr;
   std::vector<std::string> controller_types;
   get_parameter("controller_types", controller_types);
   for (const auto & controller_type : controller_types) {
-    controller_loader_->unloadLibraryForClass(controller_type);
+    std::string plugin;
+    if (has_parameter(controller_type + ".plugin")) {
+      get_parameter(controller_type + ".plugin", plugin);
+      try {
+        controller_loader_->unloadLibraryForClass(plugin);
+      } catch (const std::exception &) {
+      }
+    }
   }
-  controller_method_ = nullptr;
 }
 
 
