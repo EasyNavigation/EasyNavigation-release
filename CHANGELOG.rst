@@ -2,6 +2,11 @@
 Changelog for package easynav_interfaces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.1 (2026-07-26)
+------------------
+* GPLv3 -> Apache 2.0
+* Contributors: Francisco Martín Rico
+
 0.3.2 (2025-12-18)
 ------------------
 * Hotfix: Remove remaining C++20/23 features
