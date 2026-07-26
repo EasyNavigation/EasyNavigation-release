@@ -1,18 +1,17 @@
 # Copyright 2025 Intelligent Robotics Lab
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of the project Easy Navigation (EasyNav in short)
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import json
 import os
@@ -34,9 +33,10 @@ BASE_CLASSES = {
     'controller': {'title': 'controller plugins', 'base': 'easynav::ControllerMethodBase'},
     'costmap_filters': {'title': 'costmap filters', 'base': 'easynav::CostmapFilter'},
     'navmap_filters': {'title': 'navmap filters', 'base': 'easynav::navmap::NavMapFilter'},
+    'sensors': {'title': 'sensor perception handlers', 'base': 'easynav::PerceptionHandler'},
 }
 CATEGORY_ORDER = ['mapsmanager', 'localizer', 'planner', 'controller', 'costmap_filters',
-                  'navmap_filters']
+                  'navmap_filters', 'sensors']
 
 
 def _ament_index_roots() -> List[str]:
@@ -194,6 +194,8 @@ class PluginsVerb(VerbExtension):
                             help='Only show costmap filters.')
         parser.add_argument('--navmap-filters', action='store_true',
                             help='Only show navmap filters.')
+        parser.add_argument('--sensors', action='store_true',
+                            help='Only show sensor perception handler plugins.')
 
         # Output options
         parser.add_argument('--show-xml', action='store_true',
@@ -219,6 +221,7 @@ class PluginsVerb(VerbExtension):
             'controller': args.controller,
             'costmap_filters': args.costmap_filters,
             'navmap_filters': args.navmap_filters,
+            'sensors': args.sensors,
         }
         if not any(selected.values()):
             for k in selected:
