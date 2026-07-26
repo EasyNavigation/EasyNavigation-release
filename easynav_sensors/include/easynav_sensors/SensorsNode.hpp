@@ -1,21 +1,17 @@
 // Copyright 2025 Intelligent Robotics Lab
 //
 // This file is part of the project Easy Navigation (EasyNav in short)
-// licensed under the GNU General Public License v3.0.
-// See <http://www.gnu.org/licenses/> for details.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// Easy Navigation program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 /// \file
 /// \brief Declaration of the SensorsNode class, a ROS 2 lifecycle node for sensor fusion tasks in Easy Navigation.
@@ -31,8 +27,9 @@
 
 #include "sensor_msgs/msg/point_cloud2.hpp"
 
-#include "easynav_common/types/Perceptions.hpp"
+#include "easynav_sensors/types/Perceptions.hpp"
 #include "easynav_common/types/NavState.hpp"
+#include "pluginlib/class_loader.hpp"
 
 namespace easynav
 {
@@ -42,24 +39,14 @@ namespace easynav
  * @brief ROS 2 lifecycle node that manages sensor fusion in Easy Navigation.
  *
  * Collects, transforms, and publishes fused perception data from multiple sources.
+ * Sensor handlers are loaded at runtime as pluginlib plugins, allowing users to add
+ * new sensor types without modifying this node.
  */
 class SensorsNode : public rclcpp_lifecycle::LifecycleNode
 {
 public:
   RCLCPP_SMART_PTR_DEFINITIONS(SensorsNode)
   using CallbackReturnT = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
-
-  /**
-   * @brief Function pointer type used to handle sensor groups
-   * @param group Sensor group name.
-   * @param perceptions List of perceptions (one element from each sensor in the group).
-   * @param ns Navigation state to populate.
-   */
-  using SensorsHandlerFn = void(*)(
-    const std::string & group,
-    const std::vector<easynav::PerceptionPtr> & perceptions,
-    ::easynav::NavState & ns
-  );
 
   /**
    * @brief Constructor.
@@ -130,7 +117,11 @@ public:
    */
   void cycle(std::shared_ptr<NavState> nav_state);
 
-  void register_handler(std::shared_ptr<PerceptionHandler> handler);
+protected:
+  /// @brief Sensor groups (set as group of keys in the NavState)
+  std::map<std::string, std::vector<std::string>> groups_;
+  /// @brief vector of PerceptionHandler instances
+  std::vector<std::shared_ptr<PerceptionHandler>> handler_list_;
 
 private:
   /// @brief Callback group for real-time operations.
@@ -146,39 +137,21 @@ private:
   double forget_time_;
 
   /// @brief Target frame for perception fusion.
-  std::string robot_frame_ {"base_link"};
-
-  /// @brief Target frame for perception fusion.
   std::string tf_prefix_;
 
-  /// @brief Shared pointer to the navigation state structure.
-  std::shared_ptr<NavState> nav_state_;
+  /// @brief A flag to initialize groups in the NavState just once
+  bool groups_initialized = false;
 
-  std::map<std::string, std::vector<PerceptionPtr>> perceptions_;
-  std::map<std::string, std::shared_ptr<PerceptionHandler>> handlers_;
+  /// @brief Pluginlib class loader for PerceptionHandler plugins.
+  std::unique_ptr<pluginlib::ClassLoader<PerceptionHandler>> handler_loader_;
 
-  /// @brief Map from group name to handler function pointer (for fast dispatch in set_by_group)
-  std::unordered_map<std::string, SensorsHandlerFn> group_to_handler_;
+  /// @brief Map from ROS message type string to the built-in default plugin name.
+  /// Initialised once in the constructor with the five standard handlers.
+  /// An explicit 'plugin:' parameter on any sensor only affects that sensor;
+  /// it never modifies this table, so other sensors of the same type always
+  /// fall back to the built-in default when 'plugin:' is omitted.
+  std::unordered_map<std::string, std::string> type_to_plugin_;
 
-  /**
-   * @brief Populate NavState for a given group from perceptions; returns true if handled
-   * @param group Sensor group name.
-   * @param perceptions Vector of perceptions (one element from each sensor in the group).
-   * @param ns Navigation state to populate.
-   */
-  bool set_by_group(
-    const std::string & group,
-    const std::vector<PerceptionPtr> & perceptions,
-    ::easynav::NavState & ns
-  );
-
-  /**
-   * @brief Populate the runtime map group_to_handler_.
-   * This method uses compile-time template recursion to fill the map
-   * with the sensor handler functions for the default groups.
-   */
-  template<std::size_t I = 0>
-  void populate_group_to_handler_map();
 };
 
 }  // namespace easynav
