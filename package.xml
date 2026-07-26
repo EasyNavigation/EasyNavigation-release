@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>easynav_tools</name>
-  <version>0.3.2</version>
+  <version>0.4.1</version>
   <description>ROS 2 Navigation tools: TUI + ros2cli commands for EasyNav.</description>
 
   <maintainer email="fmrico@gmail.com">Francisco Martín Rico</maintainer>
@@ -11,7 +11,7 @@
   <maintainer email="juan.cely@urjc.es">Juan Sebastián Cely Gutiérrez</maintainer>
   <maintainer email="josemiguel.guerrero@urjc.es">José Miguel Guerrero Hernández</maintainer>
 
-  <license>GPL-3.0-or-later</license>
+  <license>Apache-2.0</license>
 
   <author>Francisco Martín Rico</author>
   <author>Francisco Miguel Moreno Olivo</author>
