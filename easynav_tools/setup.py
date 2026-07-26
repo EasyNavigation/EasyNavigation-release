@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 package_name = 'easynav_tools'
 setup(
     name=package_name,
-    version='0.4.1',
+    version='0.4.2',
     packages=find_packages(
         include=[package_name, package_name + '.*'], exclude=['test', 'scripts']
     ),
@@ -22,7 +22,6 @@ setup(
     maintainer_email='fmrico@gmail.com',
     description='ROS 2 Navigation tools: TUI (Textual) + ros2cli commands for EasyNav.',
     license='Apache-2.0',
-    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
             'tui = easynav_tools.tui.app:run_app',

@@ -1,6 +1,5 @@
 // Copyright 2025 Intelligent Robotics Lab
 //
-// This file is part of the project Easy Navigation (EasyNav in short)
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -130,7 +129,7 @@ int main(int argc, char ** argv)
           RCLCPP_INFO(system_node->get_logger(), "Selected NO Real-Time");
         }
 
-        tf2_ros::TransformListener tf_listener(*tf_buffer, tf_node, true);
+        tf2_ros::TransformListener tf_listener(*tf_buffer, *tf_node, true);
 
         rclcpp::WallRate rate(rt_freq);
         while (!stop.load(std::memory_order_relaxed)) {
