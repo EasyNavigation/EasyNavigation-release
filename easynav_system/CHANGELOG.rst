@@ -2,6 +2,16 @@
 Changelog for package easynav_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.1 (2026-07-26)
+------------------
+* Limit GoalManager publication freq
+* New parameters for system node -> freq and rt_freq
+* Perception types and ops to easynav_sensors
+* GPLv3 -> Apache 2.0
+* Improve navstate print including the time
+* Add a base_footprint frame in TFInfo
+* Contributors: Francisco Martín Rico, Francisco Miguel Moreno, jagutic
+
 0.3.2 (2025-12-18)
 ------------------
 * Hotfix: Remove remaining C++20/23 features
