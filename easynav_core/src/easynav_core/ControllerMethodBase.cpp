@@ -1,21 +1,17 @@
 // Copyright 2025 Intelligent Robotics Lab
 //
 // This file is part of the project Easy Navigation (EasyNav in short)
-// licensed under the GNU General Public License v3.0.
-// See <http://www.gnu.org/licenses/> for details.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// Easy Navigation program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 /// \file
 /// \brief Implementation of the abstract base class ControllerMethodBase.
@@ -29,7 +25,7 @@
 #include "easynav_core/MethodBase.hpp"
 #include "easynav_core/ControllerMethodBase.hpp"
 
-#include "easynav_common/types/PointPerception.hpp"
+#include "easynav_sensors/types/PointPerception.hpp"
 #include "easynav_common/RTTFBuffer.hpp"
 
 namespace easynav
@@ -94,7 +90,12 @@ ControllerMethodBase::on_inminent_collision(NavState & nav_state)
   RCLCPP_WARN_THROTTLE(
     get_node()->get_logger(), *get_node()->get_clock(), 1000,
     "ControllerMethodBase::on_inminent_collision: Inminent collision!! Stopping");
-  nav_state.set("cmd_vel", geometry_msgs::msg::TwistStamped());
+
+  geometry_msgs::msg::TwistStamped zero_speed;
+  zero_speed.header.stamp = collision_stamp_;
+  zero_speed.header.frame_id = RTTFBuffer::getInstance()->get_tf_info().robot_frame;
+
+  nav_state.set("cmd_vel", zero_speed);
 }
 
 bool
@@ -104,10 +105,13 @@ ControllerMethodBase::is_inminent_collision(NavState & nav_state)
   bool imminent = false;
 
   if (!nav_state.has("cmd_vel")) {return false;}
-  if (!nav_state.has("points")) {return false;}
+
+  const auto & perceptions = nav_state.get_by_type<PointPerception>();
+  if (perceptions.empty()) {
+    return false;
+  }
 
   const auto & twist = nav_state.get<geometry_msgs::msg::TwistStamped>("cmd_vel");
-  const auto & perceptions = nav_state.get<PointPerceptions>("points");
   const auto & tf_info = easynav::RTTFBuffer::getInstance()->get_tf_info();
   const auto & robot_frame = tf_info.robot_frame;
 
@@ -132,17 +136,15 @@ ControllerMethodBase::is_inminent_collision(NavState & nav_state)
       static_cast<double>(robot_radius_ + safety_margin_),
       static_cast<double>(robot_height_)});
 
-  const auto & cloud = PointPerceptionsOpsView(perceptions)
-    .downsample(downsample_leaf_size_)
-    .filter({-2.0, -2.0, -2.0}, {2.0, 2.0, 2.0}, false)
-    .fuse(robot_frame)
-    .filter(min, max)
-    .as_points();
 
-  if (cloud.empty()) {
-    publish_collision_zone_marker(min, max, cloud, imminent);
-    return false;
-  }
+  auto view = PointPerceptionsOpsView(perceptions);
+  view.downsample(downsample_leaf_size_)
+  .filter({-2.0, -2.0, -2.0}, {2.0, 2.0, 2.0}, false)
+  .fuse(robot_frame)
+  .filter(min, max);
+
+  collision_stamp_ = view.get_latest_stamp();
+  const auto & cloud = view.as_points();
 
   geometry_msgs::msg::Pose base_pose;
   base_pose.orientation.w = 1.0;
@@ -177,13 +179,13 @@ ControllerMethodBase::is_inminent_collision(NavState & nav_state)
 
     if (d_min_sq <= r_sq) {
       imminent = true;
-      publish_collision_zone_marker(min, max, cloud, imminent);
+      publish_collision_zone_marker(min, max, cloud, imminent, collision_stamp_);
 
       return true;
     }
   }
 
-  publish_collision_zone_marker(min, max, cloud, imminent);
+  publish_collision_zone_marker(min, max, cloud, imminent, collision_stamp_);
   return imminent;
 }
 
@@ -193,7 +195,8 @@ ControllerMethodBase::publish_collision_zone_marker(
   const std::vector<double> & min,
   const std::vector<double> & max,
   const pcl::PointCloud<pcl::PointXYZ> & cloud,
-  bool imminent_collision)
+  bool imminent_collision,
+  const rclcpp::Time & stamp)
 {
   if (!debug_markers_) {return;}
   if (!collision_marker_pub_) {return;}
@@ -206,14 +209,12 @@ ControllerMethodBase::publish_collision_zone_marker(
   {
     visualization_msgs::msg::Marker clear;
     clear.header.frame_id = robot_frame;
-    clear.header.stamp = get_node()->now();
+    clear.header.stamp = stamp;
     clear.ns = "collision_zone";
     clear.id = 0;
     clear.action = visualization_msgs::msg::Marker::DELETEALL;
     array.markers.push_back(clear);
   }
-
-  const rclcpp::Time stamp = get_node()->now();
 
   std_msgs::msg::ColorRGBA color;
   color.r = imminent_collision ? 1.0f : 0.0f;
