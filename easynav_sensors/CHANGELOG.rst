@@ -2,8 +2,9 @@
 Changelog for package easynav_sensors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.4.0 (2026-07-26)
+0.4.1 (2026-07-26)
 ------------------
+* Merge remote-tracking branch 'origin/rolling' into rolling
 * Prevent possible race condition in PointPerceptions
 * Fix out-of-bounds error in SensorsNode
 * Add Odometry perception handler to sensors
@@ -20,9 +21,11 @@ Changelog for package easynav_sensors
 * Configure failure propagation
 * Mantain Perception Handler per sensor
 * Add sensors' PerceptionHandler as plugins
+* Merge branch 'rolling' into refactor_perception
 * Perception types and ops to easynav_sensors
 * GPLv3 -> Apache 2.0
 * Improve navstate print including the time
+* Update tests
 * Add a base_footprint frame in TFInfo
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno, jagutic
 
@@ -49,13 +52,6 @@ Changelog for package easynav_sensors
 * GNSS Support
 * Fix TF compilation warnings
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
-
-0.2.0 (2025-12-01)
-------------------
-* Add vision_msgs/msg/Detection3DArray perception
-* Cleanup unused headers
-* Finished collision checker
-* Lazy update in PointPerceptions
 
 0.1.4 (2025-10-16)
 ------------------

@@ -2,8 +2,9 @@
 Changelog for package easynav_maps_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.4.0 (2026-07-26)
+0.4.1 (2026-07-26)
 ------------------
+* Merge rolling (coverage changes) into refactor_perception
 * Fix test bug in plugin class loader
 * fix(tests): fix node destructors and add comprehensive tests for controller/planner/localizer/maps_manager
   - Fix != to == in lifecycle transition guards in all 4 node destructors
@@ -36,10 +37,6 @@ Changelog for package easynav_maps_manager
 * Reshape execution and sensor handling
 * Make dummies' fake processing time independent from clock source
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
-
-0.2.0 (2025-12-01)
-------------------
-* Cleanup unused headers
 
 0.1.4 (2025-10-16)
 ------------------

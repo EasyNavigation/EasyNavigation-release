@@ -2,10 +2,10 @@
 Changelog for package easynav_interfaces
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.4.0 (2026-07-26)
+0.4.1 (2026-07-26)
 ------------------
 * GPLv3 -> Apache 2.0
-* Contributors: Francisco Martín Rico, Francisco Miguel Moreno
+* Contributors: Francisco Martín Rico
 
 0.3.2 (2025-12-18)
 ------------------
@@ -19,11 +19,6 @@ Changelog for package easynav_interfaces
 ------------------
 * Merge rolling features into kilted
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
-
-0.2.0 (2025-12-01)
-------------------
-* Merge branch 'jazzy' into rolling
-* Contributors: Francisco Martín Rico
 
 0.1.4 (2025-10-16)
 ------------------

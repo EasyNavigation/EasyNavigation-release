@@ -2,19 +2,20 @@
 Changelog for package easynav_core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.4.0 (2026-07-26)
+0.4.1 (2026-07-26)
 ------------------
 * get_by_type and get_to_vector in NavState
+* Merge rolling (coverage changes) into refactor_perception
 * Refactor PerceptionHandler
   PerceptionHandler now represents a single sensor input, not a sensor group
+  Increase coverage
 * Fix test bug in plugin class loader
-* Increase coverage
 * Perception types and ops to easynav_sensors
 * GPLv3 -> Apache 2.0
 * Adjust process time to input times
 * Sync time for markers with its the collision percetion time
 * Set robot_frame as default for collision checker
-* Add a bas_footprint frame in TFInfo
+* Add a base_footprint frame in TFInfo
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
 
 0.3.2 (2025-12-18)
@@ -40,13 +41,6 @@ Changelog for package easynav_core
 * Finished collision checker
 * Reset method execution time when triggered
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
-
-0.2.0 (2025-12-01)
-------------------
-* Add README.md with base classes description
-* Remove unused include and random
-* Set collision checker disabled by default
-* Cleanup unused headers
 
 0.1.4 (2025-10-16)
 ------------------

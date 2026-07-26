@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 #include "easynav_system/GoalManager.hpp"
 #include "easynav_system/GoalManagerClient.hpp"
 #include "easynav_common/types/NavState.hpp"

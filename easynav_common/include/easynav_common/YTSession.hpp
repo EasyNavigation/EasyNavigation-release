@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 #ifndef EASYNAV_COMMON_TYPES__YTSESSION_HPP_
 #define EASYNAV_COMMON_TYPES__YTSESSION_HPP_
 

@@ -2,8 +2,9 @@
 Changelog for package easynav_controller
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-0.4.0 (2026-07-26)
+0.4.1 (2026-07-26)
 ------------------
+* Merge rolling (coverage changes) into refactor_perception
   Increase coverage
 * fix(tests): fix node destructors and add comprehensive tests for controller/planner/localizer/maps_manager
   - Fix != to == in lifecycle transition guards in all 4 node destructors
@@ -15,7 +16,7 @@ Changelog for package easynav_controller
   - All tests cover: node name, lifecycle transitions, plugin loading success/failure, cycle methods
 * GPLv3 -> Apache 2.0
 * Improve navstate print including the time
-* Add a bas_footprint frame in TFInfo
+  Add a base_footprint frame in TFInfo
 * Contributors: Francisco Martín Rico, Francisco Miguel Moreno
 
 0.3.2 (2025-12-18)

@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 #ifndef EASYNAV_COMMON__SINGLETON_H_
 #define EASYNAV_COMMON__SINGLETON_H_
 
