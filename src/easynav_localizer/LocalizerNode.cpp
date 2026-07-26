@@ -1,21 +1,17 @@
 // Copyright 2025 Intelligent Robotics Lab
 //
 // This file is part of the project Easy Navigation (EasyNav in short)
-// licensed under the GNU General Public License v3.0.
-// See <http://www.gnu.org/licenses/> for details.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// Easy Navigation program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program. If not, see <http://www.gnu.org/licenses/>.
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 /// \file
 /// \brief Implementation of the LocalizerNode class.
@@ -24,6 +20,8 @@
 
 #include "lifecycle_msgs/msg/transition.hpp"
 #include "lifecycle_msgs/msg/state.hpp"
+#include "nav_msgs/msg/odometry.hpp"
+#include "tf2/LinearMath/Transform.hpp"
 
 #include "easynav_localizer/LocalizerNode.hpp"
 
@@ -40,26 +38,57 @@ LocalizerNode::LocalizerNode(
 
   localizer_loader_ = std::make_unique<pluginlib::ClassLoader<easynav::LocalizerMethodBase>>(
     "easynav_core", "easynav::LocalizerMethodBase");
+
+  NavState::register_printer<nav_msgs::msg::Odometry>(
+    [](const nav_msgs::msg::Odometry & odom) {
+      const double x = odom.pose.pose.position.x;
+      const double y = odom.pose.pose.position.y;
+      const double z = odom.pose.pose.position.z;
+
+      const tf2::Quaternion q(
+        odom.pose.pose.orientation.x,
+        odom.pose.pose.orientation.y,
+        odom.pose.pose.orientation.z,
+        odom.pose.pose.orientation.w);
+
+      double roll, pitch, yaw;
+      tf2::Matrix3x3(q).getRPY(roll, pitch, yaw);
+
+      std::ostringstream ret;
+      ret << std::fixed << std::setprecision(3);
+      ret << "{" << rclcpp::Time(odom.header.stamp).seconds() << " } Odometry with pose: (x: " <<
+        x << ", y: " << y << ", z: " << z << ", yaw: " << yaw << ")";
+      return ret.str();
+    });
+
+
 }
 
 LocalizerNode::~LocalizerNode()
 {
-  if (get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE) {
+  if (get_current_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE) {
     trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVE_SHUTDOWN);
   }
-  if (get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE) {
+  if (get_current_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE) {
     trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_INACTIVE_SHUTDOWN);
   }
-  if (get_current_state().id() != lifecycle_msgs::msg::State::PRIMARY_STATE_UNCONFIGURED) {
+  if (get_current_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_UNCONFIGURED) {
     trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_UNCONFIGURED_SHUTDOWN);
   }
 
+  localizer_method_ = nullptr;
   std::vector<std::string> localizer_types;
   get_parameter("localizer_types", localizer_types);
   for (const auto & localizer_type : localizer_types) {
-    localizer_loader_->unloadLibraryForClass(localizer_type);
+    std::string plugin;
+    if (has_parameter(localizer_type + ".plugin")) {
+      get_parameter(localizer_type + ".plugin", plugin);
+      try {
+        localizer_loader_->unloadLibraryForClass(plugin);
+      } catch (const std::exception &) {
+      }
+    }
   }
-  localizer_method_ = nullptr;
 }
 
 using CallbackReturnT = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
