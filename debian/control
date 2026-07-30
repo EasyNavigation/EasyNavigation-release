@@ -1,0 +1,12 @@
+Source: ros-lyrical-easynav-sensors
+Section: misc
+Priority: optional
+Maintainer: "Francisco Martín Rico" <fmrico@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-lyrical-ament-cmake, ros-lyrical-ament-cmake-gtest <!nocheck>, ros-lyrical-ament-lint-auto <!nocheck>, ros-lyrical-ament-lint-common <!nocheck>, ros-lyrical-cv-bridge, ros-lyrical-easynav-common, ros-lyrical-geometry-msgs, ros-lyrical-nav-msgs, ros-lyrical-pcl-conversions, ros-lyrical-pcl-ros, ros-lyrical-pluginlib, ros-lyrical-rclcpp, ros-lyrical-rclcpp-lifecycle, ros-lyrical-sensor-msgs, ros-lyrical-tf2-geometry-msgs, ros-lyrical-tf2-ros, ros-lyrical-vision-msgs, ros-lyrical-ros-workspace
+Homepage: https://index.ros.org/p/easynav_sensors/#lyrical
+Standards-Version: 3.9.2
+
+Package: ros-lyrical-easynav-sensors
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-lyrical-cv-bridge, ros-lyrical-easynav-common, ros-lyrical-geometry-msgs, ros-lyrical-nav-msgs, ros-lyrical-pcl-conversions, ros-lyrical-pcl-ros, ros-lyrical-pluginlib, ros-lyrical-rclcpp, ros-lyrical-rclcpp-lifecycle, ros-lyrical-sensor-msgs, ros-lyrical-tf2-geometry-msgs, ros-lyrical-tf2-ros, ros-lyrical-vision-msgs, ros-lyrical-ros-workspace
+Description: Easy Navigation: Sensors package.
