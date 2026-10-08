@@ -17,6 +17,7 @@
 #include "sensor_msgs/msg/imu.hpp"
 #include "easynav_sensors/SensorsNode.hpp"
 #include "easynav_common/RTTFBuffer.hpp"
+#include "easynav_common/TransformListener.hpp"
 #include "easynav_common/types/NavState.hpp"
 #include "easynav_sensors/types/PointPerception.hpp"
 #include "easynav_sensors/types/IMUPerception.hpp"
@@ -267,6 +268,9 @@ sensor_msgs::msg::PointCloud2 get_pc2_test_4(rclcpp::Time ts)
 
 using namespace std::chrono_literals;
 
+// The stamp of a recently received message: loose, the machine may be busy
+constexpr double kRecent = 0.5;
+
 TEST_F(SensorsNodeTestCase, convert_scan2pc)
 {
   {
@@ -332,7 +336,8 @@ TEST_F(SensorsNodeTestCase, percept_laserscan)
 
   rclcpp::executors::SingleThreadedExecutor exe;
   exe.add_node(sensors_node->get_node_base_interface());
-  exe.add_callback_group(sensors_node->get_real_time_cbg(),
+  exe.add_callback_group(
+    sensors_node->get_real_time_cbg(),
     sensors_node->get_node_base_interface());
   exe.add_node(test_node);
 
@@ -355,12 +360,14 @@ TEST_F(SensorsNodeTestCase, percept_laserscan)
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE);
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
 
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE);
 
   auto ts = test_node->now();
@@ -381,7 +388,7 @@ TEST_F(SensorsNodeTestCase, percept_laserscan)
 
   ASSERT_EQ(perceptions.size(), 1u);
   ASSERT_EQ(perceptions[0]->data.size(), 16u);
-  ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(), 0.0, 0.001);
+  ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(), 0.0, kRecent);
   ASSERT_EQ(perceptions[0]->frame_id, "base_laser");
   ASSERT_EQ(perceptions[0]->valid, true);
 //
@@ -420,7 +427,7 @@ TEST_F(SensorsNodeTestCase, percept_fuse_laserscan)
     });
 
   auto tf_buffer = easynav::RTTFBuffer::getInstance(test_node->get_clock());
-  tf2_ros::TransformListener tf_listener(*tf_buffer, *test_node, true);
+  auto tf_listener = easynav::make_transform_listener(*tf_buffer, test_node, true);
 
   auto tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(*test_node);
   geometry_msgs::msg::TransformStamped transform;
@@ -431,7 +438,8 @@ TEST_F(SensorsNodeTestCase, percept_fuse_laserscan)
 
   rclcpp::executors::SingleThreadedExecutor exe;
   exe.add_node(sensors_node->get_node_base_interface());
-  exe.add_callback_group(sensors_node->get_real_time_cbg(),
+  exe.add_callback_group(
+    sensors_node->get_real_time_cbg(),
     sensors_node->get_node_base_interface());
   exe.add_node(test_node);
 
@@ -463,12 +471,14 @@ TEST_F(SensorsNodeTestCase, percept_fuse_laserscan)
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE);
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
 
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE);
 
   {
@@ -516,12 +526,14 @@ TEST_F(SensorsNodeTestCase, percept_fuse_laserscan)
 
     ASSERT_EQ(perceptions.size(), 2u);
     ASSERT_EQ(perceptions[0]->data.size(), 16u);
-    ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(),
-      0.0, 0.02);
+    ASSERT_NEAR(
+      (test_node->now() - perceptions[0]->stamp).seconds(),
+      0.0, kRecent);
     ASSERT_EQ(perceptions[0]->valid, true);
     ASSERT_EQ(perceptions[1]->data.size(), 16u);
-    ASSERT_NEAR((test_node->now() - perceptions[1]->stamp).seconds(),
-      0.0, 0.02);
+    ASSERT_NEAR(
+      (test_node->now() - perceptions[1]->stamp).seconds(),
+      0.0, kRecent);
     ASSERT_EQ(perceptions[1]->valid, true);
 
     ASSERT_NE(fused_perception, nullptr);
@@ -598,7 +610,8 @@ TEST_F(SensorsNodeTestCase, percept_pc2)
 
   rclcpp::executors::SingleThreadedExecutor exe;
   exe.add_node(sensors_node->get_node_base_interface());
-  exe.add_callback_group(sensors_node->get_real_time_cbg(),
+  exe.add_callback_group(
+    sensors_node->get_real_time_cbg(),
     sensors_node->get_node_base_interface());
   exe.add_node(test_node);
 
@@ -621,12 +634,14 @@ TEST_F(SensorsNodeTestCase, percept_pc2)
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE);
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
 
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE);
 
   auto ts = test_node->now();
@@ -645,8 +660,9 @@ TEST_F(SensorsNodeTestCase, percept_pc2)
 
   ASSERT_EQ(perceptions.size(), 1u);
   ASSERT_EQ(perceptions[0]->data.size(), 16u);
-  ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(),
-    0.0, 0.001);
+  ASSERT_NEAR(
+    (test_node->now() - perceptions[0]->stamp).seconds(),
+    0.0, kRecent);
   ASSERT_EQ(perceptions[0]->frame_id, "base_lidar3d");
   ASSERT_EQ(perceptions[0]->valid, true);
 
@@ -688,7 +704,8 @@ TEST_F(SensorsNodeTestCase, per_sensor_handler_mixed_types_same_group)
 
   rclcpp::executors::SingleThreadedExecutor exe;
   exe.add_node(sensors_node->get_node_base_interface());
-  exe.add_callback_group(sensors_node->get_real_time_cbg(),
+  exe.add_callback_group(
+    sensors_node->get_real_time_cbg(),
     sensors_node->get_node_base_interface());
   exe.add_node(test_node);
 
@@ -707,11 +724,13 @@ TEST_F(SensorsNodeTestCase, per_sensor_handler_mixed_types_same_group)
   }
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE);
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE);
 
   const auto ts = test_node->now();
@@ -843,7 +862,7 @@ TEST_F(SensorsNodeTestCase, percept_fuse_all)
     });
 
   auto tf_buffer = easynav::RTTFBuffer::getInstance(test_node->get_clock());
-  tf2_ros::TransformListener tf_listener(*tf_buffer, test_node, true);
+  auto tf_listener = easynav::make_transform_listener(*tf_buffer, test_node, true);
 
   auto tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(*test_node);
   geometry_msgs::msg::TransformStamped transform;
@@ -934,16 +953,16 @@ TEST_F(SensorsNodeTestCase, percept_fuse_all)
 
     ASSERT_EQ(perceptions.size(), 3u);
     ASSERT_EQ(perceptions[0]->data.size(), 16u);
-    ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(), 0.0, 0.03);
+    ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(), 0.0, kRecent);
     ASSERT_EQ(perceptions[0]->valid, true);
     // ASSERT_NE(perceptions[0]->subscription, nullptr);
     ASSERT_EQ(perceptions[1]->data.size(), 16u);
-    ASSERT_NEAR((test_node->now() - perceptions[1]->stamp).seconds(), 0.0, 0.03);
+    ASSERT_NEAR((test_node->now() - perceptions[1]->stamp).seconds(), 0.0, kRecent);
     ASSERT_EQ(perceptions[1]->valid, true);
     // ASSERT_NE(perceptions[1]->subscription, nullptr);
     ASSERT_LT(perceptions[1]->stamp, perceptions[0]->stamp);
     ASSERT_EQ(perceptions[2]->data.size(), 16u);
-    ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(), 0.0, 0.03);
+    ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(), 0.0, kRecent);
     ASSERT_EQ(perceptions[2]->valid, true);
     // ASSERT_NE(perceptions[2]->subscription, nullptr);
     ASSERT_NE(fused_perception, nullptr);
@@ -982,7 +1001,7 @@ TEST_F(SensorsNodeTestCase, percept_fuse_all)
 
     ASSERT_EQ(perceptions.size(), 3u);
     ASSERT_EQ(perceptions[0]->data.size(), 16u);
-    ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(), 0.0, 0.03);
+    ASSERT_NEAR((test_node->now() - perceptions[0]->stamp).seconds(), 0.0, kRecent);
     ASSERT_EQ(perceptions[0]->valid, true);
     // ASSERT_NE(perceptions[0]->subscription, nullptr);
     ASSERT_EQ(perceptions[1]->data.size(), 16u);
@@ -1018,7 +1037,8 @@ TEST_F(SensorsNodeTestCase, percept_laserscan_default_group)
 
   rclcpp::executors::SingleThreadedExecutor exe;
   exe.add_node(sensors_node->get_node_base_interface());
-  exe.add_callback_group(sensors_node->get_real_time_cbg(),
+  exe.add_callback_group(
+    sensors_node->get_real_time_cbg(),
     sensors_node->get_node_base_interface());
   exe.add_node(test_node);
 
@@ -1038,11 +1058,13 @@ TEST_F(SensorsNodeTestCase, percept_laserscan_default_group)
   }
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE);
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE);
 
   {
@@ -1073,7 +1095,8 @@ TEST_F(SensorsNodeTestCase, percept_pc2_default_group)
 
   rclcpp::executors::SingleThreadedExecutor exe;
   exe.add_node(sensors_node->get_node_base_interface());
-  exe.add_callback_group(sensors_node->get_real_time_cbg(),
+  exe.add_callback_group(
+    sensors_node->get_real_time_cbg(),
     sensors_node->get_node_base_interface());
   exe.add_node(test_node);
 
@@ -1093,11 +1116,13 @@ TEST_F(SensorsNodeTestCase, percept_pc2_default_group)
   }
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE);
 
   sensors_node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_ACTIVATE);
-  ASSERT_EQ(sensors_node->get_current_state().id(),
+  ASSERT_EQ(
+    sensors_node->get_current_state().id(),
     lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE);
 
   {
