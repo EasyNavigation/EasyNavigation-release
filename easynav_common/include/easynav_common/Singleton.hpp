@@ -1,6 +1,5 @@
 // Copyright 2025 Intelligent Robotics Lab
 //
-// This file is part of the project Easy Navigation (EasyNav in short)
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -17,7 +16,6 @@
 #ifndef EASYNAV_COMMON__SINGLETON_H_
 #define EASYNAV_COMMON__SINGLETON_H_
 
-#include <memory>
 #include <mutex>
 #include <utility>
 
@@ -31,23 +29,35 @@ public:
   template<typename ... Args>
   static C * getInstance(Args &&... args)
   {
-    std::call_once(init_flag_, [&]() {
-        instance_ = std::make_unique<C>(std::forward<Args>(args)...);
-    });
-    return instance_.get();
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (!instance_) {
+      instance_ = new C(std::forward<Args>(args)...);
+    }
+    return instance_;
   }
 
+  /// \brief Destroy the current instance, if any; the next getInstance()/get() call
+  /// creates a fresh one.
+  ///
+  /// \warning Only safe to call when no other thread may still be dereferencing a
+  /// \c C* obtained from an earlier getInstance()/get() call -- that pointer's
+  /// lifetime is tied to the destroyed instance, and no amount of locking here can
+  /// protect a caller who is already holding and using it (the lock only serializes
+  /// this class's own instance_/mutex_ bookkeeping against concurrent getInstance()/
+  /// removeInstance() calls). Intended for sequential use, e.g. resetting singleton
+  /// state between test cases, not for tearing down an instance while it may still
+  /// be in use elsewhere.
   static void removeInstance()
   {
-    instance_.reset();
-    init_flag_ = std::once_flag();
+    std::lock_guard<std::mutex> lock(mutex_);
+    delete instance_;
+    instance_ = nullptr;
   }
 
   template<typename ... Args>
   static C & get(Args &&... args)
   {
-    getInstance(std::forward<Args>(args)...);
-    return *instance_;
+    return *getInstance(std::forward<Args>(args)...);
   }
 
 protected:
@@ -58,15 +68,16 @@ protected:
   Singleton & operator=(const Singleton &) = delete;
 
 private:
-  static std::unique_ptr<C> instance_;
-  static std::once_flag init_flag_;
+  // Never destroyed at exit: the plugin library that built it (its vtable) may be unloaded
+  static C * instance_;
+  static std::mutex mutex_;
 };
 
 template<class C>
-std::unique_ptr<C> Singleton<C>::instance_ = nullptr;
+C * Singleton<C>::instance_ = nullptr;
 
 template<class C>
-std::once_flag Singleton<C>::init_flag_;
+std::mutex Singleton<C>::mutex_;
 
 #define SINGLETON_DEFINITIONS(ClassName) \
 public: \
