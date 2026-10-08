@@ -2,6 +2,11 @@
 Changelog for package easynav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.0 (2026-10-08)
+------------------
+* Conda packages with pixi (pixi-build-ros)
+* Contributors: Francisco Martín Rico
+
 0.4.2 (2026-07-26)
 ------------------
 * GPLv3 -> Apache 2.0
