@@ -1,3 +1,39 @@
+## easynav (jazzy) - 0.5.0-1
+
+The packages in the `easynav` repository were released into the `jazzy` distro by running `/usr/bin/bloom-release --rosdistro jazzy --track jazzy easynav` on `Thu, 08 Oct 2026 19:44:12 -0000`
+
+These packages were released:
+- `easynav`
+- `easynav_common`
+- `easynav_controller`
+- `easynav_core`
+- `easynav_interfaces`
+- `easynav_localizer`
+- `easynav_maps_manager`
+- `easynav_planner`
+- `easynav_recovery`
+- `easynav_sensors`
+- `easynav_support_py`
+- `easynav_system`
+- `easynav_tools`
+
+Version of package(s) in repository `easynav`:
+
+- upstream repository: https://github.com/EasyNavigation/EasyNavigation.git
+- release repository: https://github.com/EasyNavigation/EasyNavigation-release.git
+- rosdistro version: `0.4.0-1`
+- old version: `0.4.0-1`
+- new version: `0.5.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.14.4`
+- catkin_pkg version: `1.1.1`
+- rosdep version: `0.27.0`
+- rosdistro version: `1.1.0`
+- vcstools version: `0.1.42`
+
+
 ## easynav (humble) - 0.5.0-1
 
 The packages in the `easynav` repository were released into the `humble` distro by running `/usr/bin/bloom-release --rosdistro humble --track humble easynav --new-track` on `Thu, 08 Oct 2026 19:41:10 -0000`
