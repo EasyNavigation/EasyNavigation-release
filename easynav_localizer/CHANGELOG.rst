@@ -2,6 +2,14 @@
 Changelog for package easynav_localizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.0 (2026-10-08)
+------------------
+* Runtime reconfiguration of the localizer (PluginSwitcher)
+* Data age checks, and fault injection plugin (FaultyLocalizer)
+* Rate measurement restarts on activation
+* Conda packages with pixi (pixi-build-ros)
+* Contributors: Francisco Martín Rico
+
 0.4.2 (2026-07-26)
 ------------------
 * Register Odometry printer in base LocalizerNode
